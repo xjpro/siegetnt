@@ -1,4 +1,3 @@
 name: SiegeTNT
-main: org.summit.siegetnt.Main
+main: siegetnt.SiegeTNTPlugin
 version: 1.0
-commands:
