@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,19 +31,18 @@ public class ExplosionListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         Location loc = event.getLocation();
         World world = loc.getWorld();
-        //Plot plot = ListenerHelper.getIntersectedPlot(loc, new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
 
-        boolean explosionDamagesBlocks = false;
+        boolean explosionDamagesBlocks = true;
 
         // Triggered explosions have no entity, so make a fake one
         Entity explodedEntity = event.getEntity();
+
         if (explodedEntity == null) {
             explodedEntity = world.spawnArrow(loc, new Vector(0, -1, 0), 0, 0);
-            explosionDamagesBlocks = true;
-        } 
-        // TODO need a ref to this
-        else if (explodedEntity instanceof CraftTNTPrimed) {
-            explosionDamagesBlocks = true;
+        } else if (explodedEntity.getType() == EntityType.CREEPER) {
+            // Creeper explosions do not do anything
+            // TODO should SiegeTNT really care about this?
+            explosionDamagesBlocks = false;
         }
 
         // Event would be cancelled if it was damaging something that it shouldn't be, we will honor that
@@ -70,12 +70,10 @@ public class ExplosionListener implements Listener {
             return;
         }
 
-        init();
-
-        ShockRadiusTracker.addShockRadiusLocation(loc);      
+        ShockRadiusTracker.addShockRadiusLocation(loc);
 
         // Block destruction code
-        List<ExplosionBlock> explosionBlocks = new ArrayList<ExplosionBlock>();
+        List<ExplosionBlock> explosionBlocks = new ArrayList<>();
 
         explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY(), loc.getBlockZ()), false));
         explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), false)); // center
