@@ -30,14 +30,11 @@ public class WorldListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockBurn(BlockBurnEvent event) {
         Block block = event.getBlock();
-
-        switch (block.getType()) {
-            case TNT:
-                // no fuse time on TNT - get rid of the block and make an explosion
-                event.setCancelled(true);
-                block.setType(Material.AIR);
-                block.getWorld().createExplosion(block.getLocation(), 0);
-                break;
+        if (block.getType() == Material.TNT) {
+            // no fuse time on TNT - get rid of the block and make an explosion
+            event.setCancelled(true);
+            block.setType(Material.AIR);
+            block.getWorld().createExplosion(block.getLocation(), 0);
         }
     }
 }

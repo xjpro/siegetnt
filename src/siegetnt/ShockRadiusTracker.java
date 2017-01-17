@@ -6,10 +6,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-/**
- *
- * @author Me
- */
 public abstract class ShockRadiusTracker {
 
     private static class ShockRadiusRemover implements Runnable {
@@ -26,7 +22,7 @@ public abstract class ShockRadiusTracker {
         }
     }
 
-    private static List<ShockRadius> locations = new ArrayList<ShockRadius>();
+    private static final List<ShockRadius> locations = new ArrayList<ShockRadius>();
 
     public static Collection<ShockRadius> getShockRadiusLocations() {
         return locations;

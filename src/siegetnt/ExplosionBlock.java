@@ -2,10 +2,6 @@ package siegetnt;
 
 import org.bukkit.block.Block;
 
-/**
- *
- * @author Me
- */
 public class ExplosionBlock {
 
     private final Block block;
@@ -23,5 +19,4 @@ public class ExplosionBlock {
     public boolean isCorner() {
         return isCorner;
     }
-
 }

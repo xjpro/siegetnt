@@ -19,10 +19,6 @@ import org.bukkit.util.Vector;
 import siegetnt.ExplosionBlock;
 import siegetnt.ShockRadiusTracker;
 
-/**
- *
- * @author Me
- */
 public class ExplosionListener implements Listener {
 
     private final Random random = new Random();
@@ -32,12 +28,11 @@ public class ExplosionListener implements Listener {
         Location loc = event.getLocation();
         World world = loc.getWorld();
 
-        boolean explosionDamagesBlocks = true;
-
-        // Triggered explosions have no entity, so make a fake one
         Entity explodedEntity = event.getEntity();
-
+        boolean explosionDamagesBlocks = true;
+        
         if (explodedEntity == null) {
+            // Triggered explosions have no entity, so make a fake one
             explodedEntity = world.spawnArrow(loc, new Vector(0, -1, 0), 0, 0);
         } else if (explodedEntity.getType() == EntityType.CREEPER) {
             // Creeper explosions do not do anything
@@ -106,9 +101,6 @@ public class ExplosionListener implements Listener {
         explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ() + 1), true));
 
         for (ExplosionBlock explosionBlock : explosionBlocks) {
-            // Uncomment out this line to reimplement change to ignore
-            //if(random.nextDouble() < chanceToIgnore) continue;
-
             Block block = explosionBlock.getBlock();
             boolean isCorner = explosionBlock.isCorner();
 

@@ -2,10 +2,6 @@ package siegetnt;
 
 import org.bukkit.Location;
 
-/**
- *
- * @author Me
- */
 public class ShockRadius {
 
     public final static int RADIUS = 12;

@@ -1,7 +1,6 @@
 package siegetnt;
 
 import java.util.logging.Logger;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import siegetnt.listener.*;
