@@ -3,6 +3,7 @@ package siegetnt.listener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -25,12 +26,14 @@ public class ExplosionListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityExplode(EntityExplodeEvent event) {
+        if (event.isCancelled()) return;
+
         Location loc = event.getLocation();
         World world = loc.getWorld();
 
         Entity explodedEntity = event.getEntity();
         boolean explosionDamagesBlocks = true;
-        
+
         if (explodedEntity == null) {
             // Triggered explosions have no entity, so make a fake one
             explodedEntity = world.spawnArrow(loc, new Vector(0, -1, 0), 0, 0);
