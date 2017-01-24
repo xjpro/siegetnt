@@ -140,6 +140,7 @@ public class ExplosionListener implements Listener {
                 case REDSTONE_ORE:
                 case GOLD_ORE:
                 case DIAMOND_ORE:
+                case EMERALD_ORE:
                     if (!isCorner || random.nextDouble() < 0.30) {
                         block.setType(Material.COBBLESTONE);
                     }
@@ -154,6 +155,7 @@ public class ExplosionListener implements Listener {
                     }
                     break;
                 case SANDSTONE:
+                case SANDSTONE_STAIRS:
                 case SOUL_SAND:
                     if (!isCorner || random.nextDouble() < 0.60) {
                         block.setType(Material.SAND);
