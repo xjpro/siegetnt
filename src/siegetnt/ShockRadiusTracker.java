@@ -1,46 +1,25 @@
 package siegetnt;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-public abstract class ShockRadiusTracker {
+import java.util.ArrayList;
+import java.util.List;
 
-    private static class ShockRadiusRemover implements Runnable {
+public class ShockRadiusTracker {
 
-        private final ShockRadius shockRadius;
+    private final List<ShockRadius> shockRadiuses = new ArrayList<>();
 
-        public ShockRadiusRemover(ShockRadius toBeRemoved) {
-            shockRadius = toBeRemoved;
-        }
-
-        @Override
-        public void run() {
-            ShockRadiusTracker.removeShockRadiusLocation(shockRadius);
-        }
-    }
-
-    private static final List<ShockRadius> locations = new ArrayList<ShockRadius>();
-
-    public static Collection<ShockRadius> getShockRadiusLocations() {
-        return locations;
-    }
-
-    public static void addShockRadiusLocation(Location loc) {
+    public void addShockRadiusLocation(Location loc) {
         ShockRadius shockRadius = new ShockRadius(loc);
-        locations.add(shockRadius);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("SiegeTNT"), new ShockRadiusRemover(shockRadius), 600);
-        // 1200 = 1 minute
+        shockRadiuses.add(shockRadius);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("SiegeTNT"), () -> {
+            shockRadiuses.remove(shockRadius);
+        }, 600); // 1200 = 1 minute
     }
 
-    public static void removeShockRadiusLocation(ShockRadius shockRadius) {
-        locations.remove(shockRadius);
-    }
-
-    public static boolean isInShockLocation(Location loc) {
-        for (ShockRadius radius : locations) {
+    public boolean isInShockLocation(Location loc) {
+        for (ShockRadius radius : shockRadiuses) {
             if (radius.isInRadius(loc)) {
                 return true;
             }

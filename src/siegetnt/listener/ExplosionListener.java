@@ -23,6 +23,11 @@ import siegetnt.ShockRadiusTracker;
 public class ExplosionListener implements Listener {
 
     private final Random random = new Random();
+    private final ShockRadiusTracker shockRadiusTracker;
+
+    public ExplosionListener(ShockRadiusTracker shockRadiusTracker) {
+        this.shockRadiusTracker = shockRadiusTracker;
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityExplode(EntityExplodeEvent event) {
@@ -68,7 +73,7 @@ public class ExplosionListener implements Listener {
             return;
         }
 
-        ShockRadiusTracker.addShockRadiusLocation(loc);
+        shockRadiusTracker.addShockRadiusLocation(loc);
 
         // Block destruction code
         List<ExplosionBlock> explosionBlocks = new ArrayList<>();
