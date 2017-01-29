@@ -38,6 +38,7 @@ public class PlayerActionListener implements Listener {
 		// Notch decided to make right click with flint not set TNT on fire anymore.
 		// This block of code replaces that functionality.
 		if (clickedBlock.getType() == Material.TNT
+				&& event.getItem() != null
 				&& event.getItem().getType() == Material.FLINT_AND_STEEL
 				&& event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			event.setCancelled(true);
