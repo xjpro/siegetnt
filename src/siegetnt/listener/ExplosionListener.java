@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -31,8 +32,6 @@ public class ExplosionListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityExplode(EntityExplodeEvent event) {
-        if (event.isCancelled()) return;
-
         Location loc = event.getLocation();
         World world = loc.getWorld();
 
@@ -115,7 +114,8 @@ public class ExplosionListener implements Listener {
             switch (block.getType()) {
                 case TNT:
                     block.setType(Material.AIR);
-                    block.getWorld().createExplosion(block.getLocation(), 0);
+                    Bukkit.getPluginManager().callEvent(new EntityExplodeEvent(null, block.getLocation(), new ArrayList<>(), 0));
+                    //block.getWorld().createExplosion(block.getLocation(), 0);
                     break;
                 case AIR: // can't blow up air!
                 case BEDROCK:
