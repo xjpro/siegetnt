@@ -28,7 +28,7 @@ public class WorldListener implements Listener {
         Block block = event.getBlock();
         if (ALLOWED_BLOCKS.stream().noneMatch(type -> type == block.getType()) && shockRadiusTracker.isInShockLocation(block.getLocation())) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "A recent explosion has made the area unstable");
+            event.getPlayer().sendMessage(ChatColor.RED + "A recent explosion has made the area too unstable to build");
         }
     }
 }
