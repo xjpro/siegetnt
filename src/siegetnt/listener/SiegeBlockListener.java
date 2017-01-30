@@ -1,17 +1,15 @@
 package siegetnt.listener;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+
+import java.util.ArrayList;
 
 public class SiegeBlockListener implements Listener {
 
@@ -19,6 +17,7 @@ public class SiegeBlockListener implements Listener {
 	private final Material CURING_MATERIAL = Material.AIR;
 	private final Material CURED_MATERIAL = Material.NETHERRACK;
 	private final int CONVERT_TIME = 100; // 20 = 1 second
+	private ArrayList<Location> convertingLocations = new ArrayList<>();
 
 	private final Plugin plugin;
 
@@ -32,14 +31,25 @@ public class SiegeBlockListener implements Listener {
 
 		Block block = event.getBlock();
 		if (block.getType() == PLACEMENT_MATERIAL) {
-			if(!isSupported(block)) {
+			boolean isCancelled = false;
+			if (!isSupported(block)) {
+				isCancelled = true;
 				event.getPlayer().sendMessage(ChatColor.RED + "Block must be supported by the ground or attached to a nether block");
+			}
+
+			if (convertingLocations.stream().anyMatch(location -> location.equals(block.getLocation()))) {
+				isCancelled = true; // Already a placement here
+			}
+
+			if (isCancelled) {
 				event.setCancelled(true);
 				event.setBuild(false);
 				return;
 			}
 
 			block.setType(CURING_MATERIAL);
+			convertingLocations.add(block.getLocation());
+
 			int curingEffectTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 				block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), Effect.MOBSPAWNER_FLAMES, 0);
 			}, 0, 5);
@@ -49,7 +59,7 @@ public class SiegeBlockListener implements Listener {
 				block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), Effect.ZOMBIE_CHEW_WOODEN_DOOR, 0);
 
 				// If the block is up against the ground or another cured block, place it
-				if(isSupported(block)) {
+				if (isSupported(block)) {
 					block.setType(CURED_MATERIAL);
 				}
 				// Otherwise, spawn it as a falling block
@@ -57,6 +67,8 @@ public class SiegeBlockListener implements Listener {
 					block.setType(Material.AIR); // In case something was placed here
 					block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, 0, 0.5), CURED_MATERIAL, block.getData());
 				}
+
+				convertingLocations.remove(block.getLocation());
 
 			}, CONVERT_TIME);
 		}
