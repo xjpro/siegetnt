@@ -15,6 +15,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.util.Vector;
@@ -173,6 +174,7 @@ public class ExplosionListener implements Listener {
                     // Everything else drops
                     if (!isCorner || random.nextDouble() < 0.90) {
                         block.setType(Material.AIR);
+                        Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, null));
                     }
                     break;
                 // ItemStack item = new ItemStack(block.getType(), 1);
