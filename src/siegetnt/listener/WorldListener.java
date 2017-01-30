@@ -14,7 +14,7 @@ import java.util.List;
 
 public class WorldListener implements Listener {
 
-    private static List<Material> ALLOWED_BLOCKS = Arrays.asList(Material.TNT, Material.FIRE, Material.REDSTONE_BLOCK);
+    private static List<Material> ALLOWED_BLOCKS = Arrays.asList(Material.TNT, Material.FIRE, Material.MAGMA);
     private final ShockRadiusTracker shockRadiusTracker;
 
     public WorldListener(ShockRadiusTracker shockRadiusTracker) {

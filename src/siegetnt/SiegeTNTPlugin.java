@@ -35,13 +35,13 @@ public class SiegeTNTPlugin extends JavaPlugin {
 		Recipe recipe;
 		while (it.hasNext()) {
 			recipe = it.next();
-			if (recipe != null && recipe.getResult().getType() == Material.REDSTONE_BLOCK) {
+			if (recipe != null && recipe.getResult().getType() == Material.MAGMA) {
 				it.remove();
 			}
 		}
 
-		ItemStack redstoneBlock = new ItemStack(Material.REDSTONE_BLOCK, 2);
-		ShapedRecipe siegeBlock = new ShapedRecipe(redstoneBlock);
+		ItemStack recipeOutput = new ItemStack(Material.MAGMA, 2);
+		ShapedRecipe siegeBlock = new ShapedRecipe(recipeOutput);
 		siegeBlock.shape("ABA", "BAB", "ABA");
 		siegeBlock.setIngredient('A', Material.REDSTONE);
 		siegeBlock.setIngredient('B', Material.GOLD_INGOT);

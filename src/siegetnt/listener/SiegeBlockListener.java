@@ -13,10 +13,10 @@ import java.util.ArrayList;
 
 public class SiegeBlockListener implements Listener {
 
-	private final Material PLACEMENT_MATERIAL = Material.REDSTONE_BLOCK;
+	private final Material PLACEMENT_MATERIAL = Material.MAGMA;
 	private final Material CURING_MATERIAL = Material.AIR;
 	private final Material CURED_MATERIAL = Material.NETHERRACK;
-	private final int CONVERT_TIME = 100; // 20 = 1 second
+	private final int CONVERT_TIME = 80; // 20 = 1 second
 	private ArrayList<Location> convertingLocations = new ArrayList<>();
 
 	private final Plugin plugin;
