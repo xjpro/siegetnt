@@ -131,6 +131,7 @@ public class ExplosionListener implements Listener {
                     }
                     break;
                 case OBSIDIAN:
+                case ENDER_STONE:
                     if (!isCorner || random.nextDouble() < 0.10) {
                         block.setType(Material.STONE);
                     }
