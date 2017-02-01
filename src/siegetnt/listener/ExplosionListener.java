@@ -131,7 +131,6 @@ public class ExplosionListener implements Listener {
                     }
                     break;
                 case OBSIDIAN:
-                case ENDER_STONE:
                     if (!isCorner || random.nextDouble() < 0.10) {
                         block.setType(Material.STONE);
                     }
@@ -171,6 +170,7 @@ public class ExplosionListener implements Listener {
                         block.setType(Material.SAND);
                     }
                     break;
+				case ENDER_STONE: // very vulnerable!
                 default:
                     // Everything else drops
                     if (!isCorner || random.nextDouble() < 0.90) {
