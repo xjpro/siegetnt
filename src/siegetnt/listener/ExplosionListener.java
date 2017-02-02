@@ -1,9 +1,5 @@
 package siegetnt.listener;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,12 +11,16 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.util.Vector;
 import siegetnt.ExplosionBlock;
 import siegetnt.ShockRadiusTracker;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class ExplosionListener implements Listener {
 
@@ -175,7 +175,7 @@ public class ExplosionListener implements Listener {
                     // Everything else drops
                     if (!isCorner || random.nextDouble() < 0.90) {
                         block.setType(Material.AIR);
-                        Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, null));
+                        Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.AIR, block.getData()));
                     }
                     break;
                 // ItemStack item = new ItemStack(block.getType(), 1);
