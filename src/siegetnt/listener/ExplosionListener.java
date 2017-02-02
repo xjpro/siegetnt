@@ -14,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.bukkit.util.Vector;
 import siegetnt.ExplosionBlock;
 import siegetnt.ShockRadiusTracker;
 
@@ -41,7 +40,7 @@ public class ExplosionListener implements Listener {
 
         if (explodedEntity == null) {
             // Triggered explosions have no entity, so make a fake one
-            explodedEntity = world.spawnArrow(loc, new Vector(0, -1, 0), 0, 0);
+            explodedEntity = world.spawnEntity(loc, EntityType.PRIMED_TNT);
         } else if (explodedEntity.getType() == EntityType.CREEPER) {
             // Creeper explosions do not do anything
             // TODO should SiegeTNT really care about this?
@@ -174,8 +173,8 @@ public class ExplosionListener implements Listener {
                 default:
                     // Everything else drops
                     if (!isCorner || random.nextDouble() < 0.90) {
-                        block.setType(Material.AIR);
                         Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.AIR, block.getData()));
+						block.setType(Material.AIR);
                     }
                     break;
                 // ItemStack item = new ItemStack(block.getType(), 1);
