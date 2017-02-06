@@ -15,7 +15,7 @@ public class ShockRadiusTracker {
         shockRadiuses.add(shockRadius);
         Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("SiegeTNT"), () -> {
             shockRadiuses.remove(shockRadius);
-        }, 600); // 1200 = 1 minute
+        }, 1200); // 1200 = 1 minute
     }
 
     public boolean isInShockLocation(Location loc) {

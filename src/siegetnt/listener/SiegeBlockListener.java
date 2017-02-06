@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.plugin.Plugin;
+import siegetnt.ShockRadiusTracker;
 
 import java.util.ArrayList;
 
@@ -20,9 +21,11 @@ public class SiegeBlockListener implements Listener {
 	private ArrayList<Location> convertingLocations = new ArrayList<>();
 
 	private final Plugin plugin;
+	private final ShockRadiusTracker shockRadiusTracker;
 
-	public SiegeBlockListener(Plugin plugin) {
+	public SiegeBlockListener(Plugin plugin, ShockRadiusTracker shockRadiusTracker) {
 		this.plugin = plugin;
+		this.shockRadiusTracker = shockRadiusTracker;
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -68,6 +71,7 @@ public class SiegeBlockListener implements Listener {
 					block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, 0, 0.5), CURED_MATERIAL, block.getData());
 				}
 
+				shockRadiusTracker.addShockRadiusLocation(block.getLocation());
 				convertingLocations.remove(block.getLocation());
 
 			}, CONVERT_TIME);

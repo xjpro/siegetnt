@@ -24,7 +24,7 @@ public class SiegeTNTPlugin extends JavaPlugin {
 		manager.registerEvents(new ExplosionListener(shockRadiusTracker), this);
 		manager.registerEvents(new WorldListener(shockRadiusTracker), this);
 		manager.registerEvents(new PlayerActionListener(), this);
-		manager.registerEvents(new SiegeBlockListener(this), this);
+		manager.registerEvents(new SiegeBlockListener(this, shockRadiusTracker), this);
 
 		replaceSiegeBlockRecipe();
 		Logger.getLogger("Minecraft").info("SiegeTNT enabled");
