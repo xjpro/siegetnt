@@ -4,19 +4,19 @@ import org.bukkit.Location;
 
 public class ShockRadius {
 
-    public final static int RADIUS = 12;
+	private final static int RADIUS = 12;
 
-    private final Location center;
+	private final Location epicenter;
 
-    public ShockRadius(Location epicenter) {
-        this.center = epicenter;
-    }
+	public ShockRadius(Location epicenter) {
+		this.epicenter = epicenter;
+	}
 
-    public double distance(Location anotherLocation) {
-        return center.distance(anotherLocation);
-    }
+	public boolean isInRadius(Location location) {
+		return distanceIgnoreY(location) <= RADIUS;
+	}
 
-    public boolean isInRadius(Location anotherLocation) {
-        return distance(anotherLocation) < RADIUS;
-    }
+	private double distanceIgnoreY(Location other) {
+		return Math.sqrt(Math.pow(epicenter.getX() - other.getX(), 2) + Math.pow(epicenter.getZ() - other.getZ(), 2));
+	}
 }
