@@ -124,6 +124,7 @@ public class ExplosionListener implements Listener {
 					// Immune blocks
 					break;
 				case DIAMOND_BLOCK:
+				case EMERALD_BLOCK:
 				case IRON_BLOCK:
 				case GOLD_BLOCK:
 					if (!isCorner || random.nextDouble() < 0.05) {
@@ -162,6 +163,7 @@ public class ExplosionListener implements Listener {
 				case MOSSY_COBBLESTONE:
 				case FURNACE:
 				case DISPENSER:
+				case HOPPER:
 					if (!isCorner || random.nextDouble() < 0.60) {
 						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.GRAVEL, block.getData()));
 						block.setType(Material.GRAVEL);
