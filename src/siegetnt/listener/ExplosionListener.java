@@ -118,11 +118,12 @@ public class ExplosionListener implements Listener {
 					Bukkit.getPluginManager().callEvent(new EntityExplodeEvent(null, block.getLocation(), new ArrayList<>(), 0));
 					//block.getWorld().createExplosion(block.getLocation(), 0);
 					break;
+				// Immune
 				case AIR: // can't blow up air!
 				case BEDROCK:
 				case IRON_DOOR_BLOCK:
-					// Immune blocks
 					break;
+				// 5 protection
 				case DIAMOND_BLOCK:
 				case EMERALD_BLOCK:
 				case IRON_BLOCK:
@@ -132,12 +133,16 @@ public class ExplosionListener implements Listener {
 						block.setType(Material.OBSIDIAN);
 					}
 					break;
+				// 4 protection
 				case OBSIDIAN:
+				case HARD_CLAY:
+				case STAINED_CLAY:
 					if (!isCorner || random.nextDouble() < 0.10) {
 						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.STONE, block.getData()));
 						block.setType(Material.STONE);
 					}
 					break;
+				// 3 protection
 				case STONE:
 				case SMOOTH_BRICK:
 				case SMOOTH_STAIRS:
@@ -158,6 +163,7 @@ public class ExplosionListener implements Listener {
 						block.setType(Material.COBBLESTONE);
 					}
 					break;
+				// 2 protection
 				case COBBLESTONE:
 				case COBBLESTONE_STAIRS:
 				case MOSSY_COBBLESTONE:
@@ -177,6 +183,7 @@ public class ExplosionListener implements Listener {
 						block.setType(Material.SAND);
 					}
 					break;
+				// 1 protection
 				case ENDER_STONE: // very vulnerable!
 				default:
 					// Everything else drops

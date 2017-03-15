@@ -2,17 +2,25 @@ package siegetnt;
 
 import org.bukkit.Location;
 
+import java.util.Date;
+
 public class ShockRadius {
 
 	private final static int RADIUS = 12;
 
+	private final Date created;
 	private final Location epicenter;
 
-	public ShockRadius(Location epicenter) {
+	ShockRadius(Location epicenter) {
+		this.created = new Date();
 		this.epicenter = epicenter;
 	}
 
-	public boolean isInRadius(Location location) {
+	public Date getCreated() {
+		return created;
+	}
+
+	boolean isInRadius(Location location) {
 		return distanceIgnoreY(location) <= RADIUS;
 	}
 

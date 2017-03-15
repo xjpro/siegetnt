@@ -40,9 +40,9 @@ public class SiegeTNTPlugin extends JavaPlugin {
 			}
 		}
 
-		ItemStack recipeOutput = new ItemStack(Material.MAGMA, 2);
+		ItemStack recipeOutput = new ItemStack(Material.MAGMA, 1);
 		ShapedRecipe siegeBlock = new ShapedRecipe(recipeOutput);
-		siegeBlock.shape("ABA", "BAB", "ABA");
+		siegeBlock.shape("AAA", "ABA", "AAA");
 		siegeBlock.setIngredient('A', Material.REDSTONE);
 		siegeBlock.setIngredient('B', Material.GOLD_INGOT);
 		getServer().addRecipe(siegeBlock);
