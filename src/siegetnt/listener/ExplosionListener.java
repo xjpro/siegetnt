@@ -135,8 +135,6 @@ public class ExplosionListener implements Listener {
 					break;
 				// 4 protection
 				case OBSIDIAN:
-				case HARD_CLAY:
-				case STAINED_CLAY:
 					if (!isCorner || random.nextDouble() < 0.10) {
 						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.STONE, block.getData()));
 						block.setType(Material.STONE);
@@ -149,6 +147,7 @@ public class ExplosionListener implements Listener {
 				case DOUBLE_STEP:
 				case BRICK:
 				case BRICK_STAIRS:
+				case PRISMARINE:
 				case NETHER_BRICK:
 				case NETHER_BRICK_STAIRS:
 				case PISTON_BASE:
@@ -158,6 +157,8 @@ public class ExplosionListener implements Listener {
 				case GOLD_ORE:
 				case DIAMOND_ORE:
 				case EMERALD_ORE:
+				case HARD_CLAY:
+				case STAINED_CLAY:
 					if (!isCorner || random.nextDouble() < 0.30) {
 						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.COBBLESTONE, block.getData()));
 						block.setType(Material.COBBLESTONE);
