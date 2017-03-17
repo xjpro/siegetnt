@@ -186,6 +186,7 @@ public class ExplosionListener implements Listener {
 					break;
 				// 1 protection
 				case ENDER_STONE: // very vulnerable!
+				case END_BRICKS:
 				default:
 					// Everything else drops
 					if (!isCorner || random.nextDouble() < 0.90) {
