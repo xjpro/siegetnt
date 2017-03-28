@@ -7,8 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.plugin.Plugin;
 import siegetnt.ShockRadiusTracker;
+import siegetnt.SiegeTNTPlugin;
 
 import java.util.ArrayList;
 
@@ -20,10 +20,10 @@ public class SiegeBlockListener implements Listener {
 	private final int CONVERT_TIME = 80; // 20 = 1 second
 	private ArrayList<Location> convertingLocations = new ArrayList<>();
 
-	private final Plugin plugin;
+	private final SiegeTNTPlugin plugin;
 	private final ShockRadiusTracker shockRadiusTracker;
 
-	public SiegeBlockListener(Plugin plugin, ShockRadiusTracker shockRadiusTracker) {
+	public SiegeBlockListener(SiegeTNTPlugin plugin, ShockRadiusTracker shockRadiusTracker) {
 		this.plugin = plugin;
 		this.shockRadiusTracker = shockRadiusTracker;
 	}
@@ -63,6 +63,7 @@ public class SiegeBlockListener implements Listener {
 
 				// If the block is up against the ground or another cured block, place it
 				if (isSupported(block)) {
+					plugin.logPlacement(block, CURED_MATERIAL);
 					block.setType(CURED_MATERIAL);
 				}
 				// Otherwise, spawn it as a falling block

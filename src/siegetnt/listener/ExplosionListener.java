@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import siegetnt.ExplosionBlock;
 import siegetnt.ShockRadiusTracker;
+import siegetnt.SiegeTNTPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +26,11 @@ import java.util.Random;
 public class ExplosionListener implements Listener {
 
 	private final Random random = new Random();
+	private final SiegeTNTPlugin plugin;
 	private final ShockRadiusTracker shockRadiusTracker;
 
-	public ExplosionListener(ShockRadiusTracker shockRadiusTracker) {
+	public ExplosionListener(SiegeTNTPlugin plugin, ShockRadiusTracker shockRadiusTracker) {
+		this.plugin = plugin;
 		this.shockRadiusTracker = shockRadiusTracker;
 	}
 
@@ -112,12 +115,11 @@ public class ExplosionListener implements Listener {
 			Block block = explosionBlock.getBlock();
 			boolean isCorner = explosionBlock.isCorner();
 
+			Material to = null;
 			switch (block.getType()) {
 				case TNT:
-					Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.AIR, block.getData()));
-					block.setType(Material.AIR);
+					to = Material.AIR;
 					Bukkit.getPluginManager().callEvent(new EntityExplodeEvent(null, block.getLocation(), new ArrayList<>(), 0));
-					//block.getWorld().createExplosion(block.getLocation(), 0);
 					break;
 				// Immune
 				case BEDROCK:
@@ -135,15 +137,13 @@ public class ExplosionListener implements Listener {
 				case IRON_BLOCK:
 				case GOLD_BLOCK:
 					if (!isCorner || random.nextDouble() < 0.05) {
-						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.OBSIDIAN, block.getData()));
-						block.setType(Material.OBSIDIAN);
+						to = Material.OBSIDIAN;
 					}
 					break;
 				// 4 protection
 				case OBSIDIAN:
 					if (!isCorner || random.nextDouble() < 0.10) {
-						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.STONE, block.getData()));
-						block.setType(Material.STONE);
+						to = Material.STONE;
 					}
 					break;
 				// 3 protection
@@ -166,8 +166,7 @@ public class ExplosionListener implements Listener {
 				case HARD_CLAY:
 				case STAINED_CLAY:
 					if (!isCorner || random.nextDouble() < 0.30) {
-						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.COBBLESTONE, block.getData()));
-						block.setType(Material.COBBLESTONE);
+						to = Material.COBBLESTONE;
 					}
 					break;
 				// 2 protection
@@ -178,16 +177,14 @@ public class ExplosionListener implements Listener {
 				case DISPENSER:
 				case HOPPER:
 					if (!isCorner || random.nextDouble() < 0.60) {
-						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.GRAVEL, block.getData()));
-						block.setType(Material.GRAVEL);
+						to = Material.GRAVEL;
 					}
 					break;
 				case SANDSTONE:
 				case SANDSTONE_STAIRS:
 				case SOUL_SAND:
 					if (!isCorner || random.nextDouble() < 0.60) {
-						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.SAND, block.getData()));
-						block.setType(Material.SAND);
+						to = Material.SAND;
 					}
 					break;
 				// 1 protection
@@ -196,12 +193,20 @@ public class ExplosionListener implements Listener {
 				default:
 					// Everything else drops
 					if (!isCorner || random.nextDouble() < 0.90) {
-						Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, Material.AIR, block.getData()));
-						block.setType(Material.AIR);
+						to = Material.AIR;
 					}
 					break;
 				// ItemStack item = new ItemStack(block.getType(), 1);
 				// world.dropItem(block.getLocation(), item);
+			}
+
+			if (to != null) {
+				plugin.logRemoval(block);
+				if (to != Material.AIR) {
+					plugin.logPlacement(block, to);
+				}
+				Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, to, block.getData()));
+				block.setType(to);
 			}
 		}
 		// End block destruction
