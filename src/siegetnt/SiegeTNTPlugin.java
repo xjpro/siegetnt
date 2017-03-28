@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import siegetnt.listener.ExplosionListener;
@@ -11,6 +12,7 @@ import siegetnt.listener.PlayerActionListener;
 import siegetnt.listener.SiegeBlockListener;
 import siegetnt.listener.WorldListener;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -40,8 +42,13 @@ public class SiegeTNTPlugin extends JavaPlugin {
 			}
 		}
 
-		ItemStack recipeOutput = new ItemStack(Material.MAGMA, 1);
-		ShapedRecipe siegeBlock = new ShapedRecipe(recipeOutput);
+		ItemStack siegeBlockItem = new ItemStack(Material.MAGMA, 1);
+		ItemMeta itemMeta = siegeBlockItem.getItemMeta();
+		itemMeta.setDisplayName("Siege Block");
+		itemMeta.setLore(Arrays.asList("Place within enemy", "territory to create", "bridges and staircases"));
+		siegeBlockItem.setItemMeta(itemMeta);
+
+		ShapedRecipe siegeBlock = new ShapedRecipe(siegeBlockItem);
 		siegeBlock.shape("AAA", "ABA", "AAA");
 		siegeBlock.setIngredient('A', Material.REDSTONE);
 		siegeBlock.setIngredient('B', Material.GOLD_INGOT);
