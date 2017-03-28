@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -119,8 +120,13 @@ public class ExplosionListener implements Listener {
 					//block.getWorld().createExplosion(block.getLocation(), 0);
 					break;
 				// Immune
-				case AIR: // can't blow up air!
 				case BEDROCK:
+					if (block.getRelative(BlockFace.UP).getType() == Material.IRON_DOOR_BLOCK) {
+						// Break any door attached to this block
+						block.getRelative(BlockFace.UP).breakNaturally();
+					}
+					break;
+				case AIR: // can't blow up air!
 				case IRON_DOOR_BLOCK:
 					break;
 				// 5 protection
