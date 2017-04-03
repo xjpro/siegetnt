@@ -1,9 +1,6 @@
 package siegetnt.listener;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -13,15 +10,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
-import siegetnt.ExplosionBlock;
+import org.bukkit.metadata.FixedMetadataValue;
 import siegetnt.ShockRadiusTracker;
 import siegetnt.SiegeTNTPlugin;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.Stack;
 
 public class ExplosionListener implements Listener {
 
@@ -34,97 +33,40 @@ public class ExplosionListener implements Listener {
 		this.shockRadiusTracker = shockRadiusTracker;
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityExplode(EntityExplodeEvent event) {
-		Location loc = event.getLocation();
-		World world = loc.getWorld();
+		Location location = event.getLocation();
 
 		Entity explodedEntity = event.getEntity();
-		boolean explosionDamagesBlocks = true;
-
-		if (explodedEntity == null) {
-			// Triggered explosions have no entity, so make a fake one
-			explodedEntity = world.spawnEntity(loc, EntityType.PRIMED_TNT);
-		} else if (explodedEntity.getType() == EntityType.CREEPER) {
-			// Creeper explosions do not do anything
-			// TODO should SiegeTNT really care about this?
-			explosionDamagesBlocks = false;
-		}
-
-		// Event would be cancelled if it was damaging something that it shouldn't be, we will honor that
-		// but still want the explosion animation and damage to player to occur
-		if (event.isCancelled()) {
-			explosionDamagesBlocks = false;
-			event.setCancelled(false);
-		}
-
-		// Damage from the explosion needs to be modded back in
-		double blastDistance = 4;
-		for (Entity nearby : explodedEntity.getNearbyEntities(blastDistance, blastDistance, blastDistance)) {
-			if (nearby instanceof LivingEntity && !nearby.isDead()) {
-				LivingEntity p = (LivingEntity) nearby;
-				double distanceFromExplosion = p.getLocation().distance(loc);
-				int damageTaken = (int) Math.round(25 * (1 - (distanceFromExplosion / blastDistance)));
-				p.damage(Math.max(0, damageTaken));
-			}
-		}
-
-		explodedEntity.remove();
-
-		if (!explosionDamagesBlocks) {
-			// This would be like a creeper explosion; no block damage will occur
+		if (event.isCancelled() || (explodedEntity != null &&
+				(explodedEntity.getType() == EntityType.CREEPER || explodedEntity.getType() == EntityType.GHAST))) {
+			// Two cases where we don't want to cause any block damage:
+			// 1. Event is cancelled, probably because it was damaging something protected
+			// 2. Explosion caused by a monster TODO should SiegeTNT really care about this?
+			// In these cases we'll do a "mock explosion" that will damage nearby entities but no block damage will occur
+			mockExplosion(location, explodedEntity.getType());
 			return;
 		}
 
-		shockRadiusTracker.addShockRadiusLocation(loc);
 
-		// Block destruction code
-		List<ExplosionBlock> explosionBlocks = new ArrayList<>();
-
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY(), loc.getBlockZ()), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), false)); // center
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY(), loc.getBlockZ()), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY(), loc.getBlockZ() - 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() - 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY(), loc.getBlockZ() - 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY(), loc.getBlockZ() + 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() + 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY(), loc.getBlockZ() + 1), false));
-
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() + 1, loc.getBlockZ()), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()), false)); // one up
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() + 1, loc.getBlockZ()), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() + 1, loc.getBlockZ() - 1), true));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ() - 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() + 1, loc.getBlockZ() - 1), true));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() + 1, loc.getBlockZ() + 1), true));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ() + 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() + 1, loc.getBlockZ() + 1), true));
-
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ()), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ()), false)); // one down
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ() - 1), true));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() - 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ() - 1), true));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ() + 1), true));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() + 1), false));
-		explosionBlocks.add(new ExplosionBlock(loc.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ() + 1), true));
-
-		for (ExplosionBlock explosionBlock : explosionBlocks) {
-			Block block = explosionBlock.getBlock();
-			boolean isCorner = explosionBlock.isCorner();
-
+		// Block degrading code
+		Collection<Block> explodedBlocks = getExplodedBlocks(location);
+		for (Block block : explodedBlocks) {
+			boolean isCorner = block.getMetadata("corner").get(0).asBoolean();
 			Material to = null;
 			switch (block.getType()) {
 				case TNT:
 					to = Material.AIR;
-					Bukkit.getPluginManager().callEvent(new EntityExplodeEvent(null, block.getLocation(), new ArrayList<>(), 0));
+					mockExplosion(block.getLocation(), null);
+
+					// Add a shock radius, preventing building in this area
+					shockRadiusTracker.addShockRadiusLocation(location);
 					break;
 				// Immune
 				case BEDROCK:
 					if (block.getRelative(BlockFace.UP).getType() == Material.IRON_DOOR_BLOCK) {
-						// Break any door attached to this block
+						// Break doors attached to bedrock
 						block.getRelative(BlockFace.UP).breakNaturally();
 					}
 					break;
@@ -208,12 +150,73 @@ public class ExplosionListener implements Listener {
 				Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, to, block.getData()));
 				block.setType(to);
 			}
+
+			// Clean up metadata
+			block.removeMetadata("corner", plugin);
 		}
-		// End block destruction
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onExplosionPrime(ExplosionPrimeEvent event) {
 		event.setRadius(0f); // No damage to blocks, but the animation will still occur
+	}
+
+	private Collection<Block> getExplodedBlocks(Location location) {
+		// Put into a map so we don't have any duplicates
+		HashMap<Location, Block> explodedBlocks = new HashMap<>();
+
+		Stack<Block> blocksToAdd = getSurroundingBlocks(location.getWorld().getBlockAt(location));
+		while (blocksToAdd.size() > 0) {
+			Block block = blocksToAdd.pop();
+
+			if (explodedBlocks.containsKey(block.getLocation())) {
+				block.setMetadata("corner", new FixedMetadataValue(plugin, false));
+			} else {
+				if (block.getType() == Material.TNT) {
+					// One of the block is another TNT block, add it to queue
+					getSurroundingBlocks(block).forEach(blocksToAdd::push);
+				}
+				explodedBlocks.put(block.getLocation(), block);
+			}
+		}
+
+		return explodedBlocks.values();
+	}
+
+	private Stack<Block> getSurroundingBlocks(Block center) {
+		Stack<Block> explodedBlocks = new Stack<>();
+		for (int x = -1; x <= 1; x++) {
+			for (int y = -1; y <= 1; y++) {
+				for (int z = -1; z <= 1; z++) {
+					boolean isCorner = x != 0 && y != 0 && z != 0;
+					Block block = center.getRelative(x, y, z);
+					block.setMetadata("corner", new FixedMetadataValue(plugin, isCorner));
+					explodedBlocks.add(block);
+				}
+			}
+		}
+		return explodedBlocks;
+	}
+
+	private void mockExplosion(Location location, EntityType exploded) {
+		World world = location.getWorld();
+		world.playEffect(location, Effect.EXPLOSION, 0);
+
+		// Damage from the explosion needs to be modded back in
+		double blastDistance = 4;
+		for (Entity nearby : world.getNearbyEntities(location, 4, 4, 4)) {
+			if (nearby instanceof LivingEntity && !nearby.isDead()) {
+				LivingEntity entity = (LivingEntity) nearby;
+				double distanceFromExplosion = entity.getLocation().distance(location);
+				int damageTaken = Math.max(0, (int) Math.round(25 * (1 - (distanceFromExplosion / blastDistance))));
+				EntityDamageEvent damageEvent = new EntityDamageEvent(entity,
+						exploded == EntityType.CREEPER || exploded == EntityType.GHAST ? EntityDamageEvent.DamageCause.ENTITY_EXPLOSION : EntityDamageEvent.DamageCause.BLOCK_EXPLOSION,
+						damageTaken);
+				entity.setLastDamageCause(damageEvent);
+				// todo any of these needed?
+				//entity.setLastDamage(damageTaken);
+				//entity.damage(damageTaken);
+			}
+		}
 	}
 }
