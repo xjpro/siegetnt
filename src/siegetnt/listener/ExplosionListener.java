@@ -39,16 +39,20 @@ public class ExplosionListener implements Listener {
 		Location location = event.getLocation();
 
 		Entity explodedEntity = event.getEntity();
-		if (event.isCancelled() || (explodedEntity != null &&
-				(explodedEntity.getType() == EntityType.CREEPER || explodedEntity.getType() == EntityType.GHAST))) {
+		if (explodedEntity == null) {
+			// Need an entity for block change event but don't actually want it in world
+			explodedEntity = location.getWorld().spawnEntity(location, EntityType.PRIMED_TNT);
+			explodedEntity.remove();
+		}
+
+		causeExplosiveDamage(location, explodedEntity.getType());
+
+		if (event.isCancelled() || (explodedEntity.getType() == EntityType.CREEPER || explodedEntity.getType() == EntityType.GHAST)) {
 			// Two cases where we don't want to cause any block damage:
 			// 1. Event is cancelled, probably because it was damaging something protected
 			// 2. Explosion caused by a monster TODO should SiegeTNT really care about this?
-			// In these cases we'll do a "mock explosion" that will damage nearby entities but no block damage will occur
-			mockExplosion(location, explodedEntity.getType());
 			return;
 		}
-
 
 		// Block degrading code
 		Collection<Block> explodedBlocks = getExplodedBlocks(location);
@@ -57,11 +61,14 @@ public class ExplosionListener implements Listener {
 			Material to = null;
 			switch (block.getType()) {
 				case TNT:
+					// Note: first TNT to go off will not ever hit here as it's turned into an explosion or entity by Minecraft
 					to = Material.AIR;
-					mockExplosion(block.getLocation(), null);
+
+					block.getLocation().getWorld().playEffect(location, Effect.EXPLOSION_LARGE, 0);
+					causeExplosiveDamage(block.getLocation(), EntityType.PRIMED_TNT);
 
 					// Add a shock radius, preventing building in this area
-					shockRadiusTracker.addShockRadiusLocation(location);
+					shockRadiusTracker.addShockRadiusLocation(block.getLocation());
 					break;
 				// Immune
 				case BEDROCK:
@@ -198,13 +205,10 @@ public class ExplosionListener implements Listener {
 		return explodedBlocks;
 	}
 
-	private void mockExplosion(Location location, EntityType exploded) {
-		World world = location.getWorld();
-		world.playEffect(location, Effect.EXPLOSION, 0);
-
+	private void causeExplosiveDamage(Location location, EntityType exploded) {
 		// Damage from the explosion needs to be modded back in
 		double blastDistance = 4;
-		for (Entity nearby : world.getNearbyEntities(location, 4, 4, 4)) {
+		for (Entity nearby : location.getWorld().getNearbyEntities(location, 4, 4, 4)) {
 			if (nearby instanceof LivingEntity && !nearby.isDead()) {
 				LivingEntity entity = (LivingEntity) nearby;
 				double distanceFromExplosion = entity.getLocation().distance(location);
@@ -213,9 +217,8 @@ public class ExplosionListener implements Listener {
 						exploded == EntityType.CREEPER || exploded == EntityType.GHAST ? EntityDamageEvent.DamageCause.ENTITY_EXPLOSION : EntityDamageEvent.DamageCause.BLOCK_EXPLOSION,
 						damageTaken);
 				entity.setLastDamageCause(damageEvent);
-				// todo any of these needed?
-				//entity.setLastDamage(damageTaken);
-				//entity.damage(damageTaken);
+				entity.setLastDamage(damageTaken);
+				entity.damage(damageTaken);
 			}
 		}
 	}
