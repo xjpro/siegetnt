@@ -64,7 +64,7 @@ public class ExplosionListener implements Listener {
 					// Note: first TNT to go off will not ever hit here as it's turned into an explosion or entity by Minecraft
 					to = Material.AIR;
 
-					block.getLocation().getWorld().playEffect(location, Effect.EXPLOSION_LARGE, 0);
+					block.getLocation().getWorld().playEffect(block.getLocation(), Effect.EXPLOSION_LARGE, 0);
 					causeExplosiveDamage(block.getLocation(), EntityType.PRIMED_TNT);
 
 					// Add a shock radius, preventing building in this area
