@@ -87,9 +87,9 @@ public class SiegeTNTPlugin extends JavaPlugin {
 		siegeBlockItem.setItemMeta(itemMeta);
 
 		ShapedRecipe siegeBlock = new ShapedRecipe(siegeBlockItem);
-		siegeBlock.shape("AAA", "ABA", "AAA");
+		siegeBlock.shape("BAB", "ABA", "BAB");
 		siegeBlock.setIngredient('A', Material.REDSTONE);
-		siegeBlock.setIngredient('B', Material.GOLD_INGOT);
+		siegeBlock.setIngredient('B', Material.SULPHUR);
 		getServer().addRecipe(siegeBlock);
 	}
 }
