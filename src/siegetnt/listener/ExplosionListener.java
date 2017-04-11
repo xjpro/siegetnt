@@ -46,6 +46,7 @@ public class ExplosionListener implements Listener {
 		}
 
 		causeExplosiveDamage(location, explodedEntity.getType());
+		shockRadiusTracker.addShockRadiusLocation(event.getLocation());
 
 		if (event.isCancelled() || (explodedEntity.getType() == EntityType.CREEPER || explodedEntity.getType() == EntityType.GHAST)) {
 			// Two cases where we don't want to cause any block damage:
