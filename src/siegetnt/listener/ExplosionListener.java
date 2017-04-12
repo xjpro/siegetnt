@@ -46,7 +46,6 @@ public class ExplosionListener implements Listener {
 		}
 
 		causeExplosiveDamage(location, explodedEntity.getType());
-		shockRadiusTracker.addShockRadiusLocation(event.getLocation());
 
 		if (event.isCancelled() || (explodedEntity.getType() == EntityType.CREEPER || explodedEntity.getType() == EntityType.GHAST)) {
 			// Two cases where we don't want to cause any block damage:
@@ -54,6 +53,8 @@ public class ExplosionListener implements Listener {
 			// 2. Explosion caused by a monster TODO should SiegeTNT really care about this?
 			return;
 		}
+
+		shockRadiusTracker.addShockRadiusLocation(event.getLocation());
 
 		// Block degrading code
 		Collection<Block> explodedBlocks = getExplodedBlocks(location);
