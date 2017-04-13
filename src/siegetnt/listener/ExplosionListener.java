@@ -127,6 +127,7 @@ public class ExplosionListener implements Listener {
 				case FURNACE:
 				case DISPENSER:
 				case HOPPER:
+				case CLAY:
 					if (!isCorner || random.nextDouble() < 0.60) {
 						to = Material.GRAVEL;
 					}
