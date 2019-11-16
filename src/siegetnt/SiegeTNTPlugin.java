@@ -52,7 +52,7 @@ public class SiegeTNTPlugin extends JavaPlugin {
 		Plugin plugin = getServer().getPluginManager().getPlugin("CoreProtect");
 
 		// Check that CoreProtect is loaded
-		if (plugin == null || !(plugin instanceof CoreProtect)) {
+		if (!(plugin instanceof CoreProtect)) {
 			return null;
 		}
 
@@ -75,12 +75,12 @@ public class SiegeTNTPlugin extends JavaPlugin {
 		Recipe recipe;
 		while (it.hasNext()) {
 			recipe = it.next();
-			if (recipe != null && recipe.getResult().getType() == Material.MAGMA) {
+			if (recipe != null && recipe.getResult().getType() == Material.LEGACY_MAGMA) {
 				it.remove();
 			}
 		}
 
-		ItemStack siegeBlockItem = new ItemStack(Material.MAGMA, 1);
+		ItemStack siegeBlockItem = new ItemStack(Material.LEGACY_MAGMA, 1);
 		ItemMeta itemMeta = siegeBlockItem.getItemMeta();
 		itemMeta.setDisplayName("Siege Block");
 		itemMeta.setLore(Arrays.asList("Place within enemy", "territory to create", "bridges and staircases"));
@@ -89,7 +89,7 @@ public class SiegeTNTPlugin extends JavaPlugin {
 		ShapedRecipe siegeBlock = new ShapedRecipe(siegeBlockItem);
 		siegeBlock.shape("BAB", "ABA", "BAB");
 		siegeBlock.setIngredient('A', Material.REDSTONE);
-		siegeBlock.setIngredient('B', Material.SULPHUR);
+		siegeBlock.setIngredient('B', Material.LEGACY_SULPHUR);
 		getServer().addRecipe(siegeBlock);
 	}
 }

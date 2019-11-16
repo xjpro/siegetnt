@@ -66,7 +66,7 @@ public class ExplosionListener implements Listener {
 					// Note: first TNT to go off will not ever hit here as it's turned into an explosion or entity by Minecraft
 					to = Material.AIR;
 
-					block.getLocation().getWorld().playEffect(block.getLocation(), Effect.EXPLOSION_LARGE, 0);
+					block.getLocation().getWorld().playEffect(block.getLocation(), Effect.GHAST_SHOOT, 0);
 					causeExplosiveDamage(block.getLocation(), EntityType.PRIMED_TNT);
 
 					// Add a shock radius, preventing building in this area
@@ -74,13 +74,13 @@ public class ExplosionListener implements Listener {
 					break;
 				// Immune
 				case BEDROCK:
-					if (block.getRelative(BlockFace.UP).getType() == Material.IRON_DOOR_BLOCK) {
+					if (block.getRelative(BlockFace.UP).getType() == Material.LEGACY_IRON_DOOR_BLOCK) {
 						// Break doors attached to bedrock
 						block.getRelative(BlockFace.UP).breakNaturally();
 					}
 					break;
 				case AIR: // can't blow up air!
-				case IRON_DOOR_BLOCK:
+				case LEGACY_IRON_DOOR_BLOCK:
 					break;
 				// 5 protection
 				case DIAMOND_BLOCK:
@@ -99,23 +99,23 @@ public class ExplosionListener implements Listener {
 					break;
 				// 3 protection
 				case STONE:
-				case SMOOTH_BRICK:
-				case SMOOTH_STAIRS:
-				case DOUBLE_STEP:
+				case LEGACY_SMOOTH_BRICK:
+				case LEGACY_SMOOTH_STAIRS:
+				case LEGACY_DOUBLE_STEP:
 				case BRICK:
 				case BRICK_STAIRS:
 				case PRISMARINE:
 				case NETHER_BRICK:
 				case NETHER_BRICK_STAIRS:
-				case PISTON_BASE:
-				case PISTON_STICKY_BASE:
+				case LEGACY_PISTON_BASE:
+				case LEGACY_PISTON_STICKY_BASE:
 				case IRON_ORE:
 				case REDSTONE_ORE:
 				case GOLD_ORE:
 				case DIAMOND_ORE:
 				case EMERALD_ORE:
-				case HARD_CLAY:
-				case STAINED_CLAY:
+				case LEGACY_HARD_CLAY:
+				case LEGACY_STAINED_CLAY:
 					if (!isCorner || random.nextDouble() < 0.30) {
 						to = Material.COBBLESTONE;
 					}
@@ -140,8 +140,8 @@ public class ExplosionListener implements Listener {
 					}
 					break;
 				// 1 protection
-				case ENDER_STONE: // very vulnerable!
-				case END_BRICKS:
+				case LEGACY_ENDER_STONE: // very vulnerable!
+				case LEGACY_END_BRICKS:
 				default:
 					// Everything else drops
 					if (!isCorner || random.nextDouble() < 0.90) {
@@ -157,7 +157,7 @@ public class ExplosionListener implements Listener {
 				if (to != Material.AIR) {
 					plugin.logPlacement(block, to);
 				}
-				Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, to, block.getData()));
+				Bukkit.getPluginManager().callEvent(new EntityChangeBlockEvent(explodedEntity, block, to.createBlockData()));
 				block.setType(to);
 			}
 
